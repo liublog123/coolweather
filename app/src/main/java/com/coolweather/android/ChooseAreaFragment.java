@@ -1,6 +1,7 @@
 package com.coolweather.android;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,26 +18,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import db.City;
-import db.County;
-import db.Province;
+import com.coolweather.android.db.City;
+import com.coolweather.android.db.County;
+import com.coolweather.android.db.Province;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import util.HttpUtil;
-import util.Utility;
+import com.coolweather.android.util.HttpUtil;
+import com.coolweather.android.util.Utility;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ChooseAreaFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ChooseAreaFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -99,29 +94,10 @@ public class ChooseAreaFragment extends Fragment {
     }
 
 
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChooseAreaFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ChooseAreaFragment newInstance(String param1, String param2) {
-        ChooseAreaFragment fragment = new ChooseAreaFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        listView.setOnClickListener(new AdapterView.OnItemClickListener(){
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (currentLevel == LEVEL_PROVINCE){
@@ -130,6 +106,12 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
